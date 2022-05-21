@@ -1,7 +1,9 @@
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
+    id("kotlinx-serialization")
     id("com.android.library")
+    id("com.squareup.sqldelight")
 }
 
 version = "1.0"
@@ -23,14 +25,34 @@ kotlin {
     }
     
     sourceSets {
-        val commonMain by getting
-        val commonTest by getting {
+        val commonMain by getting {
             dependencies {
-                implementation(kotlin("test"))
+                implementation(libs.koin.core)
+                implementation(libs.coroutines.core)
+                implementation(libs.sqlDelight.coroutinesExt)
+                implementation(libs.bundles.ktor.common)
+                implementation(libs.touchlab.stately)
+                implementation(libs.multiplatformSettings.common)
+                implementation(libs.kotlinx.dateTime)
+                api(libs.touchlab.kermit)
             }
         }
-        val androidMain by getting
-        val androidTest by getting
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.bundles.shared.commonTest)
+            }
+        }
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.sqlDelight.android)
+                implementation(libs.ktor.client.okHttp)
+            }
+        }
+        val androidTest by getting {
+            dependencies {
+                implementation(libs.bundles.shared.androidTest)
+            }
+        }
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -39,6 +61,10 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation(libs.sqlDelight.native)
+                implementation(libs.ktor.client.ios)
+            }
         }
         val iosX64Test by getting
         val iosArm64Test by getting
@@ -53,10 +79,16 @@ kotlin {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = libs.versions.compileSdk.get().toInt()
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdk = 21
-        targetSdk = 32
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+    }
+}
+
+sqldelight {
+    database("DroidConIndia") {
+        packageName = "in_.droidcon.india.db"
     }
 }
