@@ -1,4 +1,4 @@
-package in.droidcon.india
+package in_.droidcon.india
 
 import kotlin.test.Test
 import kotlin.test.assertTrue

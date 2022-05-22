@@ -1,4 +1,4 @@
-package in.droidcon.india
+package in_.droidcon.india
 
 import org.junit.Assert.assertTrue
 import org.junit.Test

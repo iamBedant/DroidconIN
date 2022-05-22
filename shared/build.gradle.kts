@@ -88,7 +88,7 @@ android {
 }
 
 sqldelight {
-    database("DroidConIndia") {
+    database("DroidConIndiaDb") {
         packageName = "in_.droidcon.india.db"
     }
 }
