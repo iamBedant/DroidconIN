@@ -6,6 +6,9 @@ import android.content.SharedPreferences
 import android.util.Log
 import in_.droidcon.india.di.AppInfo
 import in_.droidcon.india.di.initKoin
+import in_.droidcon.india.features.schedule.ScheduleViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 class DroidConInApp : Application() {
@@ -14,6 +17,7 @@ class DroidConInApp : Application() {
         initKoin(
             module {
                 single<Context> { this@DroidConInApp }
+                viewModel { ScheduleViewModel(get(),get{ parametersOf("ScheduleViewModel")}) }
                 single<SharedPreferences> {
                     get<Context>().getSharedPreferences("DROIDCON_IN_SETTINGS", Context.MODE_PRIVATE)
                 }
