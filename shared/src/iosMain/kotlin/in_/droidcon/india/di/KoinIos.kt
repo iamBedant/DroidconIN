@@ -6,6 +6,8 @@ import com.russhwolf.settings.Settings
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
 import in_.droidcon.india.db.DroidConIndiaDb
+import in_.droidcon.india.features.schedule.ScheduleCallbackViewModel
+import in_.droidcon.india.features.schedule.ScheduleViewModel
 import io.ktor.client.engine.darwin.*
 import org.koin.core.Koin
 import org.koin.core.KoinApplication
@@ -30,9 +32,17 @@ actual val platformModule = module {
     single<SqlDriver> { NativeSqliteDriver(DroidConIndiaDb.Schema, "DroidConIndiaDb") }
 
     single { Darwin.create() }
+
+    single { ScheduleCallbackViewModel(get(), getWith("ScheduleCallbackViewModel")) }
 }
 
 // Access from Swift to create a logger
 @Suppress("unused")
 fun Koin.loggerWithTag(tag: String) =
     get<Logger>(qualifier = null) { parametersOf(tag) }
+
+
+@Suppress("unused") // Called from Swift
+object KotlinDependencies : KoinComponent {
+    fun getScheduleViewModel() = getKoin().get<ScheduleCallbackViewModel>()
+}
