@@ -1,0 +1,38 @@
+CREATE TABLE ScheduleTb(
+id INTEGER NOT NULL PRIMARY KEY,
+title TEXT NOT NULL,
+type INTEGER NOT NULL,
+time TEXT NOT NULL,
+meridiem TEXT NOT NULL,
+day TEXT NOT NULL,
+audiName TEXT
+);
+
+insert:
+INSERT OR REPLACE INTO ScheduleTb
+VALUES ?;
+
+deleteAll:
+DELETE FROM ScheduleTb;
+
+
+schedulesWithSpeakers:
+SELECT *
+FROM ScheduleTb
+INNER JOIN Schedule_Speaker
+ON ScheduleTb.id = Schedule_Speaker.scheduleId
+INNER JOIN SpeakerTb
+ON Schedule_Speaker.speakerId = SpeakerTb.id;
+
+
+schedulesWithTags:
+SELECT *
+FROM ScheduleTb
+INNER JOIN Schedule_Tags
+ON ScheduleTb.id = Schedule_Tags.scheduleId
+INNER JOIN TagTb
+ON Schedule_Tags.tagId = TagTb.id;
+
+selectAll:
+SELECT *
+FROM ScheduleTb;

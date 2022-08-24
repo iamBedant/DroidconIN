@@ -1,0 +1,15 @@
+CREATE TABLE Schedule_Speaker(
+scheduleId INTEGER NOT NULL,
+speakerId INTEGER NOT NULL,
+PRIMARY KEY(scheduleId, speakerId),
+FOREIGN KEY (scheduleId) REFERENCES ScheduleTb(id) ON DELETE CASCADE,
+FOREIGN KEY (speakerId) REFERENCES SpeakerTb(id) ON DELETE CASCADE
+);
+
+
+insert:
+INSERT OR REPLACE INTO Schedule_Speaker
+VALUES ?;
+
+deleteAll:
+DELETE FROM Schedule_Speaker;

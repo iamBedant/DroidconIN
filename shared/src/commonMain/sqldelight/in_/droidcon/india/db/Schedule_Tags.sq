@@ -1,0 +1,16 @@
+CREATE TABLE Schedule_Tags(
+    scheduleId INTEGER NOT NULL,
+    tagId INTEGER NOT NULL,
+    PRIMARY KEY(scheduleId, tagId),
+    FOREIGN KEY (scheduleId) REFERENCES ScheduleTb(id) ON DELETE CASCADE,
+    FOREIGN KEY (tagId) REFERENCES TagTb(id) ON DELETE CASCADE
+);
+
+
+insert:
+INSERT OR REPLACE INTO Schedule_Tags
+VALUES ?;
+
+
+deleteAll:
+DELETE FROM Schedule_Tags;

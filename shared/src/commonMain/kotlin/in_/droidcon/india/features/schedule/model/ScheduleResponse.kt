@@ -34,37 +34,37 @@ data class Schedule(
     var time: String,
     @SerialName("meridiem")
     var meridiem: String,
-    @SerialName("speaker")
-    var speaker: ArrayList<Speaker>,
+    @SerialName("speakers")
+    var speaker: ArrayList<SpeakerNetwork>,
     @SerialName("tags")
-    var tags: ArrayList<Tags>,
-    @SerialName("audi")
-    var audi: Audi,
+    var tags: ArrayList<TagsNetwork>,
+    @SerialName("audiName")
+    var audi: String,
     @SerialName("day")
     var day: String
 )
 
 @Serializable
-data class Tags(
+data class TagsNetwork(
     @SerialName("id")
     val id: Int,
-
-    @SerialName("name")
+    @SerialName("displayName")
     val name: String,
+    @SerialName("colorCode")
+    var colorCode: String
+
 )
 
 @Serializable
-data class Speaker(
+data class SpeakerNetwork(
     @SerialName("id")
     var id: Int,
     @SerialName("name")
-    var name: String
-)
-
-@Serializable
-data class Audi(
-    @SerialName("id")
-    var id: Int,
-    @SerialName("name")
-    var name: String
+    var name: String,
+    @SerialName("imageUrl")
+    var imageUrl: String,
+    @SerialName("description")
+    var description: String,
+    @SerialName("twitterHandle")
+    var twitterHandle: String
 )

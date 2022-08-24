@@ -12,6 +12,7 @@ import co.touchlab.kermit.Logger
 import in_.droidcon.india.android.ui.theme.DroidconInTheme
 import in_.droidcon.india.di.injectLogger
 import in_.droidcon.india.features.schedule.ScheduleViewModel
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
 
@@ -28,6 +29,8 @@ class MainActivity : ComponentActivity(), KoinComponent {
             }
         }
         viewModel.refreshSchedule()
+
+        viewModel.observeSessions()
     }
 }
 

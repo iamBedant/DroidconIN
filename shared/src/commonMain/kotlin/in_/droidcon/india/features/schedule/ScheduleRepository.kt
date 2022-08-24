@@ -3,7 +3,7 @@ package in_.droidcon.india.features.schedule
 import co.touchlab.kermit.Logger
 import co.touchlab.stately.ensureNeverFrozen
 import com.russhwolf.settings.Settings
-import in_.droidcon.india.features.schedule.model.Sessions
+import in_.droidcon.india.features.schedule.model.Session
 import in_.droidcon.india.network.NetworkApi
 import in_.droidcon.india.network.error.NetworkResponse
 import in_.droidcon.india.persistance.DbHelper
@@ -28,13 +28,13 @@ class ScheduleRepository(
         ensureNeverFrozen()
     }
 
-    fun getSessions(): Flow<List<Sessions>> = dbHelper.selectAllSessions()
+    fun getSessions(): Flow<List<Session>> = dbHelper.selectAllSessions()
 
-    suspend fun updateFavorite(session: Sessions) {
-        dbHelper.updateFavorite(session.sessionId, !session.favorite)
+    suspend fun updateFavorite(session: Session) {
+
     }
 
-    fun getFavoriteSessions(): Flow<List<Sessions>> = dbHelper.selectFavoriteSessions()
+    fun getFavoriteSessions(): Flow<List<Session>> = dbHelper.selectFavoriteSessions()
 
     suspend fun syncScheduleIfRequired() {
         when (val result = networkApi.fetchDroidconSchedule()) {

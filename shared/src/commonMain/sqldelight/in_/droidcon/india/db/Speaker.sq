@@ -1,0 +1,15 @@
+CREATE TABLE SpeakerTb(
+id INTEGER NOT NULL PRIMARY KEY,
+name TEXT NOT NULL,
+imageUrl TEXT NOT NULL,
+description TEXT NOT NULL,
+twitterHandle TEXT
+);
+
+insert:
+INSERT OR REPLACE INTO SpeakerTb
+VALUES ?;
+
+
+deleteAll:
+DELETE FROM SpeakerTb;

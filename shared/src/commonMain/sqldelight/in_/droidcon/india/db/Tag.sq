@@ -1,0 +1,13 @@
+CREATE TABLE TagTb (
+id INTEGER NOT NULL PRIMARY KEY,
+displayName TEXT NOT NULL,
+colorCode TEXT NOT NULL
+);
+
+insert:
+INSERT OR REPLACE INTO TagTb
+VALUES ?;
+
+
+deleteAll:
+DELETE FROM TagTb;

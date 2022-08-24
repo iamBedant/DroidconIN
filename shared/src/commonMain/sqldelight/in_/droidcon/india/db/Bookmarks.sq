@@ -1,5 +1,14 @@
-CREATE TABLE Bookmarks (
-id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-talkId INTEGER NOT NULL UNIQUE,
-favorite INTEGER AS Boolean NOT NULL DEFAULT 0
+CREATE TABLE BookmarksTb(
+scheduleId INTEGER NOT NULL PRIMARY KEY
 );
+
+insert:
+INSERT INTO BookmarksTb
+VALUES ?;
+
+deleteAll:
+DELETE FROM BookmarksTb;
+
+selectAll:
+SELECT *
+FROM BookmarksTb;
