@@ -12,6 +12,7 @@ import in_.droidcon.india.features.schedule.model.Speaker
 import in_.droidcon.india.features.schedule.model.Tags
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.zip
 
 class DbHelper(
@@ -40,21 +41,42 @@ class DbHelper(
         }
     }
 
-    fun selectAllSessions(): Flow<List<Session>> {
-        return selectSchedulesAndSpeakers()
-            .zip(getAllSchedulesWithTags())
-            { sessionMap, scheduleWithTags ->
-                val sessionList = mutableListOf<Session>()
-                val tagMap = scheduleWithTags.groupBy { it.id }
-                sessionMap.forEach {
-                    val tagList = createTagList(tagMap[it.value.id] ?: emptyList())
-                    sessionList.add(
-                        it.value.copy(tags = tagList)
-                    )
-                }
-                return@zip sessionList
+    fun selectAllSessionsWithCombine(): Flow<List<Session>> {
+        return combine(
+            getAllSchedules(),
+            getAllSchedulesWithTags(),
+            getAllSchedulesWithSpeakers()
+        ) { allSchedules, scheduleTags, scheduleSpeakers ->
+
+            val sessionListWithSpeakers = getSessionListWithSpeakers(allSchedules,scheduleSpeakers)
+
+            val sessionList = mutableListOf<Session>()
+            val tagMap = scheduleTags.groupBy { it.id }
+            sessionListWithSpeakers.forEach {
+                val tagList = createTagList(tagMap[it.value.id] ?: emptyList())
+                sessionList.add(
+                    it.value.copy(tags = tagList)
+                )
             }
+            return@combine sessionList
+        }
     }
+
+
+    private fun getSessionListWithSpeakers(
+        allSchedules: List<ScheduleTb>,
+        scheduleSpeakers: List<SchedulesWithSpeakers>
+    ): HashMap<Long, Session> {
+        val sessionListWithSpeakers = hashMapOf<Long, Session>()
+        val speakerListMap = scheduleSpeakers.groupBy { it.id }
+        allSchedules.forEach { schedule ->
+            sessionListWithSpeakers[schedule.id] =
+                parseToSession(schedule, speakerListMap[schedule.id] ?: emptyList())
+        }
+        return sessionListWithSpeakers
+    }
+
+
 
     private fun createTagList(tagList: List<SchedulesWithTags>): List<Tags> {
         val tags = mutableListOf<Tags>()
@@ -64,21 +86,6 @@ class DbHelper(
             )
         }
         return tags
-    }
-
-
-    private fun selectSchedulesAndSpeakers(): Flow<HashMap<Long, Session>> {
-        return getAllSchedules().zip(getAllSchedulesWithSpeakers()) { allSchedules, scheduleSpeakerMap ->
-            val sessionList = hashMapOf<Long, Session>()
-            val speakerListMap = scheduleSpeakerMap.groupBy { it.id }
-            allSchedules.forEach { schedule ->
-                sessionList.put(
-                    schedule.id,
-                    parseToSession(schedule, speakerListMap[schedule.id] ?: emptyList())
-                )
-            }
-            return@zip sessionList
-        }
     }
 
     private fun parseToSession(

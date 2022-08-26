@@ -28,7 +28,7 @@ class ScheduleRepository(
         ensureNeverFrozen()
     }
 
-    fun getSessions(): Flow<List<Session>> = dbHelper.selectAllSessions()
+    fun getSessions(): Flow<List<Session>> = dbHelper.selectAllSessionsWithCombine()
 
     suspend fun updateFavorite(session: Session) {
 
