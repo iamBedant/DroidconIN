@@ -10,29 +10,17 @@ import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@RunWith(AndroidJUnit4::class)
+//@RunWith(AndroidJUnit4::class)
 class DbTests {
-    private lateinit var dbHelper: DbHelper
-
-    @BeforeTest
-    fun setUp()= runTest {
-        dbHelper = DbHelper(
-            sqlDriver = testDbConnection(),
-            Logger,
-            Dispatchers.Default
-        )
-        dbHelper.deleteAll()
-    }
-
-    @Test
-    fun `Delete All Success`() = runTest {
-        dbHelper.updateScheduleList(emptyList())
-        assertTrue(dbHelper.selectAllItems().first().isNotEmpty())
-        dbHelper.deleteAll()
-
-        assertTrue(
-            dbHelper.selectAllItems().first().count() == 0,
-            "Delete All did not work"
-        )
-    }
+//    private lateinit var dbHelper: DbHelper
+//
+//    @BeforeTest
+//    fun setUp()= runTest {
+//        dbHelper = DbHelper(
+//            sqlDriver = testDbConnection(),
+//            Logger,
+//            Dispatchers.Default
+//        )
+//        dbHelper.deleteAll()
+//    }
 }

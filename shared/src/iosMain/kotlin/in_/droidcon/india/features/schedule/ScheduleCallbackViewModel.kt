@@ -12,6 +12,8 @@ class ScheduleCallbackViewModel(
 
     override val viewModel = ScheduleViewModel(scheduleRepository, log)
 
+    val schedules = viewModel.sessionState.asCallbacks()
+
     fun refreshSchedule() {
         viewModel.refreshSchedule()
     }
