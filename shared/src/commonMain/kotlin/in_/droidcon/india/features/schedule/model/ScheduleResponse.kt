@@ -17,7 +17,7 @@ data class ScheduleResponse(
 @Serializable
 data class Data(
     @SerialName("last_updated")
-    var lastUpdated: Int,
+    var version: Int,
     @SerialName("schedule")
     var schedule: ArrayList<Schedule>
 )

@@ -13,7 +13,6 @@ import in_.droidcon.india.features.schedule.model.Tags
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.zip
 
 class DbHelper(
     sqlDriver: SqlDriver,
@@ -23,8 +22,11 @@ class DbHelper(
 
     private val db: DroidConIndiaDb = DroidConIndiaDb(sqlDriver)
 
-    fun updateFavorite(sessionId: Int, favorite: Boolean) {
-        TODO("Not yet implemented")
+    suspend fun updateBoommark(sessionId: Int, isBookmarked: Boolean) {
+        log.i("Updating bookmarkStatus for session $sessionId with $isBookmarked")
+        db.transactionWithContext(backgroundDispatcher){
+            db.bookmarksQueries.insert(BookmarksTb(isBookmarked = isBookmarked, sessionId= sessionId.toLong()))
+        }
     }
 
     fun selectFavoriteSessions(): Flow<List<Session>> {
@@ -41,12 +43,13 @@ class DbHelper(
         }
     }
 
-    fun selectAllSessionsWithCombine(): Flow<List<Session>> {
+    fun selectAllSessions(): Flow<List<Session>> {
         return combine(
             getAllSchedules(),
             getAllSchedulesWithTags(),
-            getAllSchedulesWithSpeakers()
-        ) { allSchedules, scheduleTags, scheduleSpeakers ->
+            getAllSchedulesWithSpeakers(),
+            getAllBookmarks()
+        ) { allSchedules, scheduleTags, scheduleSpeakers, bookmarks ->
 
             val sessionListWithSpeakers = getSessionListWithSpeakers(allSchedules,scheduleSpeakers)
 
@@ -55,10 +58,24 @@ class DbHelper(
             sessionListWithSpeakers.forEach {
                 val tagList = createTagList(tagMap[it.value.id] ?: emptyList())
                 sessionList.add(
-                    it.value.copy(tags = tagList)
+                    it.value.copy(tags = tagList, isBookmarked = getBookmarkValue(bookmarks, it.value.id))
                 )
             }
             return@combine sessionList
+        }
+    }
+
+    private fun getAllBookmarks(): Flow<List<BookmarksTb>> {
+        return db.bookmarksQueries.selectAll().asFlow().mapToList()
+    }
+
+    private fun getBookmarkValue(bookmarks: List<BookmarksTb>, id: Long): Boolean {
+        val bookmarkList = bookmarks.filter { it.sessionId ==id }
+
+        return if (bookmarkList.isEmpty()){
+            false
+        } else {
+            bookmarkList.first().isBookmarked
         }
     }
 
@@ -137,18 +154,6 @@ class DbHelper(
             .asFlow()
             .mapToList()
     }
-
-    data class ScheduleAll(
-        val id: Long,
-        val title: String,
-        val type: Long,
-        val time: String,
-        val meridiem: String,
-        val day: String,
-        val audiName: String,
-        val speaker: List<SpeakerTb>,
-        val tags: List<TagTb>
-    )
 
     suspend fun updateScheduleList(list: List<Schedule>) {
         val scheduleList = mutableListOf<ScheduleTb>()

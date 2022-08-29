@@ -1,9 +1,10 @@
 CREATE TABLE BookmarksTb(
-scheduleId INTEGER NOT NULL PRIMARY KEY
+sessionId INTEGER NOT NULL PRIMARY KEY,
+isBookmarked INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 insert:
-INSERT INTO BookmarksTb
+INSERT OR REPLACE INTO BookmarksTb
 VALUES ?;
 
 deleteAll:

@@ -10,6 +10,7 @@ data class Session(
     val audiName: String?,
     val speakers : List<Speaker>,
     val tags: List<Tags>,
+    val isBookmarked : Boolean = false
 )
 
 data class Speaker(

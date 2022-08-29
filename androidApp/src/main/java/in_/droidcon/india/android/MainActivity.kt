@@ -11,10 +11,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -69,7 +66,7 @@ fun MainScreen(
         onRefresh = { viewModel.refreshSchedule() },
         onSuccess = { data -> logger.v { "View updating with ${data.size} sessions" } },
         onError = { exception -> logger.e { "Displaying error: $exception" } },
-        onBookmark = { viewModel.updateBookmark(it) }
+        onBookmark = { sessionId, isBookmarked -> viewModel.updateBookmark(sessionId, isBookmarked) }
     )
 
 }
@@ -80,7 +77,7 @@ fun MainScreenContent(
     onRefresh: () -> Unit = {},
     onSuccess: (List<Session>) -> Unit = {},
     onError: (String) -> Unit = {},
-    onBookmark: (String) -> Unit = {}
+    onBookmark: (Int, Boolean) -> Unit
 ) {
     Surface(
         color = MaterialTheme.colors.background,
@@ -112,19 +109,28 @@ fun Empty() {
 }
 
 @Composable
-fun SessionListContent( sessions: List<Session>, onBookmark: (String) -> Unit) {
+fun SessionListContent( sessions: List<Session>, onBookmark: (Int, Boolean) -> Unit) {
     LazyColumn{
         items(sessions) { session ->
-            SessionRow(session = session, onBookmark = onBookmark)
+            SessionRow(session = session)
             SpeakerView(session.speakers)
             TagsView(session.tags)
+            if(session.isBookmarked){
+                Button(onClick = { onBookmark(session.id.toInt(), false) }) {
+                    Text("Remove")
+                }
+            } else {
+                Button(onClick = { onBookmark(session.id.toInt(), true) }) {
+                    Text("Add")
+                }
+            }
             Divider()
         }
     }
 }
 
 @Composable
-fun SessionRow(session: Session, onBookmark: (String) -> Unit) {
+fun SessionRow(session: Session) {
         Row(
             Modifier
                 .clickable { }

@@ -19,6 +19,7 @@ class ScheduleViewModel(
 
     init {
         observeSessions()
+        refreshSchedule()
     }
 
     fun refreshSchedule(): Job {
@@ -27,8 +28,10 @@ class ScheduleViewModel(
         }
     }
 
-    fun updateBookmark(it: String){
-
+    fun updateBookmark(sessionId: Int, isBookMarked: Boolean) : Job{
+        return viewModelScope.launch {
+            scheduleRepository.updateBookmark(sessionId, isBookMarked)
+        }
     }
 
     private fun observeSessions() {

@@ -21,17 +21,17 @@ class ScheduleRepository(
     private val log = log.withTag("ScheduleRepository")
 
     companion object {
-        internal const val DB_TIMESTAMP_KEY = "DbTimestampKey"
+        internal const val CACHE_SCHEDULE_VERSION = "CacheScheduleVersion"
     }
 
     init {
         ensureNeverFrozen()
     }
 
-    fun getSessions(): Flow<List<Session>> = dbHelper.selectAllSessionsWithCombine()
+    fun getSessions(): Flow<List<Session>> = dbHelper.selectAllSessions()
 
-    suspend fun updateFavorite(session: Session) {
-
+    suspend fun updateBookmark(sessionId: Int, isBookMarked: Boolean) {
+        dbHelper.updateBoommark(sessionId, isBookMarked)
     }
 
     fun getFavoriteSessions(): Flow<List<Session>> = dbHelper.selectFavoriteSessions()
@@ -40,7 +40,11 @@ class ScheduleRepository(
         when (val result = networkApi.fetchDroidconSchedule()) {
             is NetworkResponse.Success -> {
                 log.d("Result Fetched Successfully")
-                dbHelper.updateScheduleList(result.value.data?.schedule ?: emptyList())
+                val remoteVersion = result.value.data?.version ?: 0
+                if (remoteVersion > 0 && isSyncRequired(remoteVersion)) {
+                    dbHelper.updateScheduleList(result.value.data?.schedule ?: emptyList())
+                    settings.putInt(CACHE_SCHEDULE_VERSION, remoteVersion)
+                }
             }
             is NetworkResponse.NetworkError -> {
                 log.d("Network Error")
@@ -52,7 +56,7 @@ class ScheduleRepository(
 
     }
 
-    private fun ifSyncRequired(): Boolean {
-        TODO()
+    private fun isSyncRequired(remoteVersion: Int): Boolean {
+        return remoteVersion > settings.getInt(CACHE_SCHEDULE_VERSION, 0)
     }
 }
