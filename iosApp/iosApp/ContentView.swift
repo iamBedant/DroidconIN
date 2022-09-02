@@ -53,6 +53,10 @@ class ObservableScheduleModel : ObservableObject {
         viewModel = nil
     }
     
+    func updateBookmark(sessionId: Int, isBookmarked: Bool) {
+        viewModel?.updateBookmark(sessionId: Int32(sessionId), isBookmarked: isBookmarked)
+    }
+    
 }
 
 
@@ -63,7 +67,12 @@ struct ContentView: View {
         ScheduleListContent(
             loading: observableModel.loading,
             sessions: observableModel.schedules,
-            error: observableModel.error
+            error: observableModel.error,
+            onBookamrk : {  sessionId, isBookmarked  in
+                self.observableModel.updateBookmark(
+                sessionId: sessionId,
+                isBookmarked: isBookmarked
+            )}
         ).onAppear(perform: {
             observableModel.activate()
             observableModel.refresh()
@@ -78,13 +87,13 @@ struct ScheduleListContent: View {
     var loading: Bool
     var sessions: [Session]?
     var error: String?
-    
+    var onBookamrk: (Int, Bool) -> Void
     var body: some View {
         ZStack{
             VStack{
                 if let sessions = sessions {
                     List(sessions, id: \.id){ session in
-                        SessionRowView(session: session)
+                        SessionRowView(session: session, onBookamrk: onBookamrk)
                     }
                 }
             }
@@ -95,12 +104,22 @@ struct ScheduleListContent: View {
 
 struct SessionRowView: View {
     var session: Session
-    
+    var onBookamrk: (Int, Bool) -> Void
+
     var body: some View {
         VStack{
             Text(session.title)
             Text(getSessionSpeakers(speakers: session.speakers))
             Text(getSessionTags(tags: session.tags))
+            if(session.isBookmarked){
+                Button(action: {
+                    onBookamrk(Int(session.id), false)
+                }) { Text("Remove") }
+            } else {
+                Button(action: {
+                    onBookamrk(Int(session.id), true)
+                }) { Text("Add")}
+            }
         }
     }
 }

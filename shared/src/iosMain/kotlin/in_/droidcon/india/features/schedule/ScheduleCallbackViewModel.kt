@@ -17,4 +17,8 @@ class ScheduleCallbackViewModel(
     fun refreshSchedule() {
         viewModel.refreshSchedule()
     }
+
+    fun updateBookmark(sessionId: Int, isBookmarked: Boolean){
+        viewModel.updateBookmark(sessionId, isBookmarked)
+    }
 }
